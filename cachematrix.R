@@ -1,5 +1,12 @@
-## Put comments here that give an overall description of what your
-## functions do
+## 2 functions are included in here, makeCacheMatrix and cacheSolve
+## makeCacheMatrix: creates a special "matrix" object that can cache its inverse.
+## cacheSolve: computes the inverse of the special "matrix" returned by makeCacheMatrix
+## How to run: 
+## source("cachematrix.R")
+## t<-matrix(c(11, 21, 12, 22), 2, 2)
+## datalist <- makeCacheMatrix(t)
+## cacheSolve(datalist)
+
 
 
 ## This function creates a special "matrix" object that can cache its inverse.
@@ -12,11 +19,16 @@ makeCacheMatrix <- function(x = matrix()) {
                 x <<- y
                 m <<- NULL
         }
-        ## get value
+        
+        ## returns the value of the original matrix
         get <- function() x
-        ## set value as its inverse
+        
+        
+        ## this is called by cacheSolve() during the first cacheSolve() access     
         setsolve <- function(solve) m <<- solve
-        ## returns its inverse
+        
+      
+        ## this will return the cached value to cacheSolve() on subsequent accesses
         getsolve <- function() m
         
         list(set = set, get = get,
@@ -29,13 +41,14 @@ makeCacheMatrix <- function(x = matrix()) {
 
 cacheSolve<- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
+       
         m <- x$getsolve()
-        if(!is.null(m)) {
-                message("getting cached data")
-                return(m)
+        if(!is.null(m)) {       # if solved matrix was already cached (not NULL) ...
+                message("getting cached data") # ... send this message to the console
+                return(m)       # return the matrix ... "return" ends
         }
-        data <- x$get()
-        m <- solve(data, ...)
-        x$setsolve(m)
-        m
+        data <- x$get() # pass the matrix to data
+        m <- solve(data, ...) # if m was NULL then we have to inverse the data
+        x$setsolve(m) # store the inverse matrix in x
+        m # return m
 }
